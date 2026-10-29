@@ -1,0 +1,50 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: 'main'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: 'pages'
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/urls@v4
+
+      - name: Setup Bun Runtimes
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install Dependencies
+        run: bun install
+
+      - name: Build Static Site Assets
+        run: bun run build
+
+      - name: Handle Multi-page 404 Route Refresh
+        run: cp .output/public/index.html .output/public/404.html
+
+      - name: Setup GitHub Pages Platform
+        uses: actions/configure-pages@v4
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.output/public'
+
+      - name: Deploy Live Build Production
+        id: deployment
+        uses: actions/deploy-pages@v4
