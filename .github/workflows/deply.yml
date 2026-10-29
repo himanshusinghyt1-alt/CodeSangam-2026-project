@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/urls@v4
+        uses: actions/checkout@v4
 
       - name: Setup Bun Runtimes
         uses: oven-sh/setup-bun@v2
@@ -48,3 +48,4 @@ jobs:
       - name: Deploy Live Build Production
         id: deployment
         uses: actions/deploy-pages@v4
+
